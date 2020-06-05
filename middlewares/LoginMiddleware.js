@@ -20,6 +20,8 @@ const verifyAuthToken = (req, res, next) => {
       });
       return;
     } else {
+      console.log(decode);
+      req.id = decode.id;
       next();
     }
   });

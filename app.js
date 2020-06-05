@@ -6,10 +6,11 @@ app.use(bodyParser.json());
 
 require('./routes/Posts')(app);
 require('./routes/User')(app);
+require('./routes/Likes')(app);
 
 mongoose.connect(
   'mongodb://localhost:27017/DeepTags',
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, createIndexes: true },
   () => console.log('connected ')
 );
 

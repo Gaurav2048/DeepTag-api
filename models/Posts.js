@@ -28,13 +28,9 @@ const PostSchema = mongoose.Schema({
     type: String,
     require: true,
   },
-  latitude: {
-    type: String,
-    require: true,
-  },
-  longitude: {
-    type: String,
-    require: true,
+  location: {
+    type: { type: String },
+    coordinates: [Number],
   },
   likes: [
     {
@@ -90,5 +86,6 @@ const PostSchema = mongoose.Schema({
     type: Date,
   },
 });
+PostSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Posts', PostSchema);

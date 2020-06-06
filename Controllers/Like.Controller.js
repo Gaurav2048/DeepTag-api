@@ -94,3 +94,32 @@ exports.disLike = (req, res) => {
       });
     });
 };
+
+exports.getAllLIkes = (req, res) => {
+  Post.find({
+    _id: req.params.postId,
+  })
+    .select({ likes: 1, likeCount: 1 })
+    .then((doc) => {
+      if (doc) {
+        res.status(200).send({
+          status: true,
+          message: 'Like information',
+          likes: doc[0].likes,
+          likeCount: doc[0].likeCount,
+        });
+      } else {
+        res.status(401).send({
+          status: false,
+          message: 'something went wrong.',
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        status: false,
+        message: 'Internal server error',
+        err,
+      });
+    });
+};

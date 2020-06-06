@@ -38,11 +38,46 @@ exports.addLike = (req, res) => {
         post
           .save()
           .then((post) => {
-            res.status(200).send(post);
+            res.status(200).send({
+              status: true,
+              message: 'post liked',
+              postId: post._id,
+            });
           })
           .catch((err) => {
             res.status(500).send(err);
           });
+      } else {
+        res.status(401).send({
+          status: false,
+          message: 'Post is already liked by user.',
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(401).send({
+        status: false,
+        message: ' some error occured ',
+        err,
+      });
+    });
+};
+
+exports.disLike = (req, res) => {
+  Post.updateOne(
+    { _id: req.params.postId },
+    {
+      $pull: { likes: { userid: req.id } },
+      $inc: { likeCount: -1 },
+    },
+    { safe: true, multi: true }
+  )
+    .then((post) => {
+      if (post) {
+        res.status(200).send({
+          status: true,
+          message: 'Post unliked',
+        });
       } else {
         res.status(401).send({
           status: false,
@@ -58,6 +93,4 @@ exports.addLike = (req, res) => {
         err,
       });
     });
-
-  Post;
 };

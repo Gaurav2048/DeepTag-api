@@ -6,7 +6,11 @@ module.exports = function(app) {
   app.post('/api/v1/posts', postController.createPost);
 
   // home page route
-  app.get('/api/v1/posts', verifyAuthToken, postController.getHomePageData);
+  app.get(
+    '/api/v1/posts/offset/:skip',
+    verifyAuthToken,
+    postController.getHomePageData
+  );
 
   // get one post data
   app.get('/api/v1/posts/:id', verifyAuthToken, postController.getOnePost);

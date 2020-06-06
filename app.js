@@ -7,6 +7,7 @@ app.use(bodyParser.json());
 require('./routes/Posts')(app);
 require('./routes/User')(app);
 require('./routes/Likes')(app);
+require('./routes/Impression')(app);
 
 mongoose.connect(
   'mongodb://localhost:27017/DeepTags',

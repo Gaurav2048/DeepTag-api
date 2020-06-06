@@ -4,13 +4,12 @@ const config = require('../Config/config');
 const jwt = require('jsonwebtoken');
 
 exports.createUser = (req, res) => {
-  const user = new User({
-    title: req.body.name,
+  const user = {
+    name: req.body.name,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 12),
-  });
-  user
-    .save()
+  };
+  User.create(user)
     .then((data) => {
       res.status(200).json(data);
     })

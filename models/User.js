@@ -26,14 +26,40 @@ const userSchema = mongoose.Schema({
   imageUri: {
     type: String,
   },
-  follower: {
+  followerCount: {
     type: Number,
     default: 0,
   },
-  following: {
+  followingCount: {
     type: Number,
     default: 0,
   },
+  follower: [
+    {
+      userid: {
+        type: String,
+      },
+      name: {
+        type: String,
+      },
+      imageUrl: {
+        type: String,
+      },
+    },
+  ],
+  following: [
+    {
+      userid: {
+        type: String,
+      },
+      name: {
+        type: String,
+      },
+      imageUrl: {
+        type: String,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model('Users', userSchema);

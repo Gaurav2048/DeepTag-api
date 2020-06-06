@@ -3,7 +3,8 @@ module.exports = function(app) {
   const verifyAuthToken = require('../middlewares/LoginMiddleware');
   const postController = require('../Controllers/Post.Controller');
 
-  app.post('/api/v1/posts', postController.createPost);
+  // create a fresh post
+  app.post('/api/v1/posts', verifyAuthToken, postController.createPost);
 
   // home page route
   app.get(

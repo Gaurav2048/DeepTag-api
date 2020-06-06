@@ -8,6 +8,7 @@ require('./routes/Posts')(app);
 require('./routes/User')(app);
 require('./routes/Likes')(app);
 require('./routes/Impression')(app);
+require('./routes/Profile')(app);
 
 mongoose.connect(
   'mongodb://localhost:27017/DeepTags',

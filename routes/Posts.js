@@ -15,4 +15,7 @@ module.exports = function(app) {
 
   // get one post data
   app.get('/api/v1/posts/:id', verifyAuthToken, postController.getOnePost);
+
+  // get already posted locations
+  app.post('/api/v1/sanitize', verifyAuthToken, postController.sanitize);
 };

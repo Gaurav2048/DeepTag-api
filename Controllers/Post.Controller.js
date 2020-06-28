@@ -2,7 +2,9 @@ const Post = require('../models/Posts');
 const User = require('../models/User');
 
 exports.createPost = (req, res) => {
-  Post.create(req.body)
+  const user = req.body;
+  user.user_id = req.id;
+  Post.create(user)
     .then((data) => {
       res.status(200).send(data);
     })
@@ -24,12 +26,6 @@ exports.getOnePost = (req, res) => {
 exports.getHomePageData = (req, res) => {
   let homePageData = {};
 
-  if (res.skip !== 0) {
-    // todo for pagination.
-
-    return;
-  }
-
   Post.find({
     location: {
       $near: {
@@ -41,12 +37,29 @@ exports.getHomePageData = (req, res) => {
       },
     },
   })
+    .select({
+      _id: 1,
+      isMotorable: 1,
+      likeCount: 1,
+      reviewCount: 1,
+      images: 1,
+      user_id: 1,
+      name: 1,
+      description: 1,
+      state: 1,
+      date: 1,
+      'likes.imageUrl': 1,
+    })
     .then((posts) => {
       homePageData.near = posts;
-      return Post.find({
-        sort: { reviewCount: -1 },
-        limit: 10,
-      });
+      return Post.find({})
+        .limit(2)
+        .select({
+          location: 0,
+          reviews: 0,
+          likes: 0,
+          __v: 0,
+        });
     })
     .then((posts) => {
       homePageData.popular = posts;
@@ -77,5 +90,41 @@ const getPostsByFollowing = (ids, skip) => {
   })
     .sort({ date: -1 })
     .limit(10)
-    .skip(skip);
+    .skip(skip)
+    .select({ location: 0, reviews: 0, likes: 0, __v: 0 });
+};
+
+exports.sanitize = (req, res) => {
+  console.log('sanitize', req.body.latitude + ' ' + req.body.longitude);
+
+  Post.find({
+    location: {
+      $near: {
+        $maxDistance: 250,
+        $geometry: {
+          type: 'Point',
+          coordinates: [req.body.longitude, req.body.latitude],
+        },
+      },
+    },
+  })
+    .select({ _id: 1, name: 1, images: 1, state: 1, country: 1 })
+    .then((posts) => {
+      if (posts) {
+        return res.status(200).send({
+          status: true,
+          message: 'Data found',
+          places: posts,
+          err: {},
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        status: false,
+        message: 'Internal server error',
+        places: [],
+        error: err,
+      });
+    });
 };

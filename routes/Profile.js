@@ -19,4 +19,10 @@ module.exports = function(app) {
     verifyAuthToken,
     profileController.getUserProfile
   );
+
+  app.get(
+    '/api/v1/userInfo/:user_id/post/:post_id',
+    verifyAuthToken,
+    profileController.userAndPostInfo
+  );
 };

@@ -37,3 +37,63 @@ exports.getProfileData = (req, res) => {
 exports.updateProfileData = (req, res) => {};
 
 exports.getUserProfile = (req, res) => {};
+
+exports.userAndPostInfo = (req, res) => {
+  // User.aggregate()
+  //   .match({
+  //     _id: req.params.user_id,
+  //   })
+  //   .project({
+  //     following: {
+  //       $cond: {
+  //         if: {
+  //           $eq: ['$follower.userid', req.id],
+  //         },
+  //         then: true,
+  //         else: false,
+  //       },
+  //     },
+  //     name: 1,
+  //     imageUri: 1,
+  //   })
+  //
+
+  let requiredObj = {};
+
+  User.findOne({
+    _id: req.params.user_id,
+  })
+    .select({ _id: 1, name: 1, imageUrl: 1 })
+    .then((user) => {
+      if (user) {
+        requiredObj = { ...requiredObj, ...user._doc };
+        return User.findOne({
+          _id: req.params.user_id,
+          'follower.userid': req.id,
+        }).select({ 'follower.userid': 1 });
+      }
+    })
+    .then((report) => {
+      if (report.follower && report.follower.length > 0) {
+        requiredObj = { ...requiredObj, followingUser: true };
+      } else {
+        requiredObj = { ...requiredObj, followingUser: false };
+      }
+      return Post.findOne(
+        { _id: req.params.post_id },
+        {
+          'reviews.reviewer.imageUrl': { $slice: [0, 4] },
+          avgReview: 1,
+          likeCount: 1,
+          reviewCount: 1,
+        }
+      );
+    })
+    .then((data) => {
+      requiredObj = { ...requiredObj, ...data._doc };
+      res.status(200).send(requiredObj);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+};

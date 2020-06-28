@@ -63,17 +63,28 @@ const PostSchema = mongoose.Schema({
       review: {
         type: String,
       },
-      id: {
-        type: String,
-        require: true,
+      reviewer: {
+        userid: {
+          type: String,
+          require: true,
+        },
+        name: {
+          type: String,
+          require: true,
+        },
+        imageUrl: {
+          type: String,
+          require: true,
+        },
       },
-      imageUrl: {
-        type: String,
-        require: true,
-      },
+      imageUrl: [String],
     },
   ],
   reviewCount: {
+    type: Number,
+    default: 0,
+  },
+  avgReview: {
     type: Number,
     default: 0,
   },

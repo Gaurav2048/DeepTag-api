@@ -15,7 +15,7 @@ module.exports = function(app) {
 
   // get particular user data.
   app.get(
-    '/api/v1/userProfile/:userid',
+    '/api/v1/userProfile',
     verifyAuthToken,
     profileController.getUserProfile
   );

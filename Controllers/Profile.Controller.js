@@ -36,8 +36,40 @@ exports.getProfileData = (req, res) => {
 
 exports.updateProfileData = (req, res) => {};
 
-exports.getUserProfile = (req, res) => {};
+// delivering entire information of user
+// to android user profile page.
+exports.getUserProfile = (req, res) => {
+  console.log(req.id);
+  let responseObj = {};
+  User.findOne({
+    _id: req.id,
+  })
+    .select({ followerCount: 1 })
+    .then((count) => {
+      console.log('1', count);
 
+      responseObj = { followerCount: count.followerCount };
+      return Post.find({
+        user_id: req.id,
+      }).select({
+        name: 1,
+        state: 1,
+        description: 1,
+        avgReview: 1,
+        reviewCount: 1,
+        images: 1,
+      });
+    })
+    .then((places) => {
+      responseObj = { ...responseObj, places };
+      res.status(200).send(responseObj);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+};
+
+// for post detail page in android
 exports.userAndPostInfo = (req, res) => {
   // User.aggregate()
   //   .match({
@@ -66,6 +98,8 @@ exports.userAndPostInfo = (req, res) => {
     .select({ _id: 1, name: 1, imageUrl: 1 })
     .then((user) => {
       if (user) {
+        console.log(user);
+
         requiredObj = { ...requiredObj, ...user._doc };
         return User.findOne({
           _id: req.params.user_id,
@@ -74,11 +108,13 @@ exports.userAndPostInfo = (req, res) => {
       }
     })
     .then((report) => {
-      if (report.follower && report.follower.length > 0) {
+      console.log('report', report);
+      if (report && report.follower.length > 0) {
         requiredObj = { ...requiredObj, followingUser: true };
       } else {
         requiredObj = { ...requiredObj, followingUser: false };
       }
+
       return Post.findOne(
         { _id: req.params.post_id },
         {
@@ -91,9 +127,13 @@ exports.userAndPostInfo = (req, res) => {
     })
     .then((data) => {
       requiredObj = { ...requiredObj, ...data._doc };
+      console.log(requiredObj);
+
       res.status(200).send(requiredObj);
     })
     .catch((err) => {
+      console.log(err);
+
       res.status(500).send(err);
     });
 };
